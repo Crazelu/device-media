@@ -8,10 +8,12 @@ import android.os.AsyncTask;
 import android.os.Build;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.core.app.ActivityCompat;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Objects;
 
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.embedding.engine.plugins.activity.ActivityAware;
@@ -44,15 +46,16 @@ public class DeviceMediaPlugin implements FlutterPlugin, MethodCallHandler, Acti
     final Result result = new MethodResultWrapper(rawResult);
     switch (call.method) {
       case "requestPermission":
-          new PermissionTask(context, result, activity).execute();
+          final boolean isImage = call.argument("isImage");
+          new PermissionTask(context, result, activity, isImage).execute();
         break;
 
       case "getFoldersImages":
           new GetImagesFoldersTask(context, result).execute();
          
         break;
-      case "getAllImages":
-
+      case "getVideos":
+          new VideosTask(context, result).execute();
         break;
 
 
@@ -61,7 +64,6 @@ public class DeviceMediaPlugin implements FlutterPlugin, MethodCallHandler, Acti
     }
   }
 
-    @TargetApi(Build.VERSION_CODES.CUPCAKE)
     private static class GetImagesFoldersTask extends AsyncTask<Void, Void, Void> {
         private Context context;
         private Result result;
@@ -80,7 +82,7 @@ public class DeviceMediaPlugin implements FlutterPlugin, MethodCallHandler, Acti
                 result.error("DeviceMediaPlugin", "Some error occurred", "Check logs");
             }
 
-            if (folderImages.isEmpty()) {
+           else if (folderImages.isEmpty()) {
                 result.error("DeviceMediaPlugin", "Permission required", "Call requestPermission first");
             } else {
                 result.success(folderImages);
@@ -90,25 +92,68 @@ public class DeviceMediaPlugin implements FlutterPlugin, MethodCallHandler, Acti
         }
 
 
-    @TargetApi(Build.VERSION_CODES.CUPCAKE)
+
     private static class PermissionTask extends AsyncTask<Void, Void, Void> {
         private Context context;
         private Result result;
         private Activity activity;
+        private boolean isImage;
 
-        public  PermissionTask(Context context,Result result,Activity activity){
+        public  PermissionTask(Context context,Result result,Activity activity, boolean isImage){
             this.context = context;
             this.result = result;
             this.activity = activity;
+            this.isImage = isImage;
         }
 
         protected Void doInBackground(Void... params) {
-            DeviceImagesUtils imagesUtils = new DeviceImagesUtils();
-            if (!imagesUtils.doesAppHavePermission(context)) {
+            if(isImage){
+                DeviceImagesUtils imagesUtils = new DeviceImagesUtils();
+                if (!imagesUtils.doesAppHavePermission(context)) {
 
-                ActivityCompat.requestPermissions(activity,new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 3);
+                    ActivityCompat.requestPermissions(activity,new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 3);
+                }
+            }
+            else{
+                //app is trying to get ACCESS_MEDIA_LOCATION permission for videos too
+                //if API level >= 29
+                DeviceVideosUtils videosUtils = new DeviceVideosUtils();
+                if (!videosUtils.doesAppHavePermission(context)) {
+
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                        ActivityCompat.requestPermissions(activity,new String[]{Manifest.permission.ACCESS_MEDIA_LOCATION}, 4);
+                    }
+                }
             }
             result.success(true);
+
+            return null;
+        }
+    }
+
+
+    private static class VideosTask extends AsyncTask<Void, Void, Void> {
+        private Context context;
+        private Result result;
+
+        public  VideosTask(Context context,Result result){
+            this.context = context;
+            this.result = result;
+        }
+
+        @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+        protected Void doInBackground(Void... params) {
+            DeviceVideosUtils videosUtils = new DeviceVideosUtils();
+            ArrayList<HashMap<String, Object>> videosList =  videosUtils.getVideos(context);
+            if (videosList == null) {
+                result.error("DeviceMediaPlugin", "Some error occurred", "Check logs");
+            }
+
+            if (Objects.requireNonNull(videosList).isEmpty()) {
+                result.error("DeviceMediaPlugin", "Permission required", "Call requestPermission first");
+            } else {
+                result.success(videosList);
+            }
             return null;
         }
     }

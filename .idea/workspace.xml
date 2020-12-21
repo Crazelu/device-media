@@ -1,13 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="6e253401-8899-44a0-a6b1-c55a5a8ff5ab" name="Default Changelist" comment="" />
+    <list default="true" id="6e253401-8899-44a0-a6b1-c55a5a8ff5ab" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/android/.idea/vcs.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/android/.idea/caches/build_file_checksums.ser" beforeDir="false" afterPath="$PROJECT_DIR$/android/.idea/caches/build_file_checksums.ser" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/android/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/android/build.gradle" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/android/src/main/AndroidManifest.xml" beforeDir="false" afterPath="$PROJECT_DIR$/android/src/main/AndroidManifest.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/android/src/main/java/tech/devcrazelu/device_media/DeviceMediaPlugin.java" beforeDir="false" afterPath="$PROJECT_DIR$/android/src/main/java/tech/devcrazelu/device_media/DeviceMediaPlugin.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/device_media.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/device_media.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/src/device_media.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/src/device_media.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/device_media_test.dart" beforeDir="false" afterPath="$PROJECT_DIR$/test/device_media_test.dart" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
-  <component name="ExecutionTargetManager" SELECTED_TARGET="10.159.64.17:5555" />
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
@@ -15,6 +25,9 @@
         <option value="Dart File" />
       </list>
     </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="ProjectId" id="1lsmtgEVf9sAxyzgx3kB6XzQWjF" />
   <component name="ProjectViewState">
@@ -24,6 +37,7 @@
     <option name="showLibraryContents" value="true" />
   </component>
   <component name="PropertiesComponent">
+    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="dart.analysis.tool.window.force.activate" value="false" />
     <property name="io.flutter.reload.alreadyRun" value="true" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
@@ -52,10 +66,10 @@
       <screen x="0" y="0" width="1366" height="768" />
     </state>
     <state x="531" y="273" key="#com.intellij.ide.util.projectWizard.JdkChooserPanel.MyDialog/0.0.1366.768@0.0.1366.768" timestamp="1608419122243" />
-    <state x="463" y="139" key="FileChooserDialogImpl" timestamp="1608546566082">
+    <state x="463" y="139" key="FileChooserDialogImpl" timestamp="1608564651426">
       <screen x="0" y="0" width="1366" height="768" />
     </state>
-    <state x="463" y="139" key="FileChooserDialogImpl/0.0.1366.768@0.0.1366.768" timestamp="1608546566082" />
+    <state x="463" y="139" key="FileChooserDialogImpl/0.0.1366.768@0.0.1366.768" timestamp="1608564651426" />
     <state width="1306" height="145" key="GridCell.Tab.0.bottom" timestamp="1608553645180">
       <screen x="0" y="0" width="1366" height="768" />
     </state>
@@ -72,9 +86,9 @@
       <screen x="0" y="0" width="1366" height="768" />
     </state>
     <state width="1306" height="145" key="GridCell.Tab.0.right/0.0.1366.768@0.0.1366.768" timestamp="1608553645180" />
-    <state x="379" y="208" key="com.intellij.ide.util.TipDialog" timestamp="1608545704347">
+    <state x="379" y="208" key="com.intellij.ide.util.TipDialog" timestamp="1608556802060">
       <screen x="0" y="0" width="1366" height="768" />
     </state>
-    <state x="379" y="208" key="com.intellij.ide.util.TipDialog/0.0.1366.768@0.0.1366.768" timestamp="1608545704347" />
+    <state x="379" y="208" key="com.intellij.ide.util.TipDialog/0.0.1366.768@0.0.1366.768" timestamp="1608556802060" />
   </component>
 </project>
