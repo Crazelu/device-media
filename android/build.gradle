@@ -1,0 +1,38 @@
+group 'tech.devcrazelu.device_media'
+version '1.0'
+
+buildscript {
+    repositories {
+        google()
+        jcenter()
+    }
+
+    dependencies {
+        classpath 'com.android.tools.build:gradle:3.5.0'
+    }
+}
+
+rootProject.allprojects {
+    repositories {
+        google()
+        jcenter()
+    }
+}
+
+apply plugin: 'com.android.library'
+
+android {
+    compileSdkVersion 29
+
+    defaultConfig {
+        minSdkVersion 16
+    }
+    lintOptions {
+        disable 'InvalidPackage'
+    }
+}
+
+dependencies {
+//    implementation files('C:/Flutter/flutter/bin/cache/artifacts/engine/android-x64/flutter.jar')
+    api 'androidx.legacy:legacy-support-v4:1.0.0'
+}
