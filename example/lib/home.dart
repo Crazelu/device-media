@@ -1,11 +1,12 @@
-import 'package:device_media_example/views/images/images_folder_view.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
-import 'dart:io';
 
 import 'package:flutter/services.dart';
 import 'package:device_media/device_media.dart';
+
+import 'views/images/image_albumns_view.dart';
+import 'views/videos/video_list_view.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -14,24 +15,35 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   List<ImageFolder> _imageFolders;
+  List<DeviceVideo> _videos;
+  PageController _pageController;
+  int _selectedIndex;
+  List<String> _pageNames = ["Albums", "Videos", "Music"];
+  String _pageName;
 
   @override
   void initState() {
     super.initState();
     initPlatformState();
+    _selectedIndex = 0;
+    _pageName = _pageNames[0];
+    _pageController = PageController(initialPage: _selectedIndex);
   }
 
   // Platform messages are asynchronous, so we initialize in an async method.
   Future<void> initPlatformState() async {
     List<ImageFolder> imageFolders;
+    List<DeviceVideo> videos;
     // Platform messages may fail, so we use a try/catch PlatformException.
 
     try {
-      await DeviceMedia.requestPermission();
-      imageFolders =  await DeviceMedia.getFoldersImages();
+      await DeviceMedia.requestPermission(isImage: false);
+      imageFolders = await DeviceMedia.getFoldersImages();
+      videos = await DeviceMedia.getVideos();
     } on PlatformException {
       setState(() {
-        _imageFolders =imageFolders?? [];
+        _imageFolders = imageFolders ?? [];
+        _videos = videos ?? [];
       });
     }
 
@@ -42,75 +54,53 @@ class _HomeState extends State<Home> {
 
     setState(() {
       _imageFolders = imageFolders;
+      _videos = videos;
     });
+  }
+
+  void goToPage(int index) {
+    if (_selectedIndex != index) {
+      setState(() {
+        _selectedIndex = index;
+        _pageName = _pageNames[index];
+      });
+
+      _pageController.animateToPage(index,
+          duration: Duration(milliseconds: 200), curve: Curves.easeInCubic);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Flutter Media'),
+        title: Text(_pageName),
       ),
-      bottomNavigationBar: BottomNavigationBar(items: [
-        BottomNavigationBarItem(icon: Icon(Icons.photo_camera_back),
-            label: 'Images'),
-        BottomNavigationBarItem(icon: Icon(Icons.video_collection_rounded),
-            label: 'Videos'),
-        BottomNavigationBarItem(icon: Icon(Icons.audiotrack_rounded),
-            label: 'Music'),
-      ],),
-      body: Center(
-        child:_imageFolders == null? CircularProgressIndicator() :GridView.count(
-            childAspectRatio: .58,
-            crossAxisCount: 3,
-            children:[
-                for(var folder in _imageFolders)
-                  Wrap(
-                    children: [
-                      GestureDetector(
-                        onTap: (){
-                          Navigator.of(context).push(CupertinoPageRoute(builder: ((context)=>
-                              ImagesFolderView(folderName: folder.folderName,images: folder.images,))));
-                        },
-                        child: Container(
-                            padding: EdgeInsets.symmetric(vertical: 10, horizontal: 5),
-                            height:230,
-                            width:230,
-                            child: Column(
-                              children: [
-                              Container(
-                                height:150,
-                                width:150,
-                                decoration: BoxDecoration(
-                                  color: Colors.grey[200],
-                                  borderRadius: BorderRadius.circular(20),
-                                  image: DecorationImage(
-                                      image: FileImage(File(folder.images[0].imagePath)),
-                                      fit: BoxFit.cover),
-                                ),
-                              ),
-                              SizedBox(height:10),
-                              Container(
-                                  width:150,
-                                  child:Text(
-                                      folder.folderName,
-                                      textAlign: TextAlign.center,
-                                      overflow: TextOverflow.ellipsis,
-                                      maxLines: 1,
-                                      style:TextStyle(fontWeight:FontWeight.w600, fontSize:14))),
-                                SizedBox(height:3),
-                                Container(
-                                    width:150,
-                                    child:Text(
-                                        '${folder.images.length}',
-                                        textAlign: TextAlign.center,
-                                        overflow: TextOverflow.ellipsis,
-                                        maxLines: 1,
-                                        style:TextStyle(fontSize:12, color:Colors.black54)))
-                            ],)),
-                      )],),
-
-            ]),
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _selectedIndex,
+        onTap: goToPage,
+        items: [
+          BottomNavigationBarItem(
+              icon: Icon(Icons.photo_camera_back), label: 'Images'),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.video_collection_rounded), label: 'Videos'),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.audiotrack_rounded), label: 'Music'),
+        ],
+      ),
+      body: PageView(
+        controller: _pageController,
+        onPageChanged: (int page) {
+          setState(() {
+            _selectedIndex = page;
+            _pageName = _pageNames[page];
+          });
+        },
+        children: [
+          ImageAlbumnsView(imageFolders: _imageFolders),
+          VideoListView(videos: _videos),
+          Container()
+        ],
       ),
     );
   }

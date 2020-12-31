@@ -119,7 +119,7 @@ public class DeviceMediaPlugin implements FlutterPlugin, MethodCallHandler, Acti
                 //if API level >= 29
                 DeviceVideosUtils videosUtils = new DeviceVideosUtils();
                 if (!videosUtils.doesAppHavePermission(context)) {
-
+ ActivityCompat.requestPermissions(activity,new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 3);
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                         ActivityCompat.requestPermissions(activity,new String[]{Manifest.permission.ACCESS_MEDIA_LOCATION}, 4);
                     }

@@ -10,13 +10,13 @@ import android.net.Uri;
 import android.os.Build;
 import android.provider.MediaStore;
 import android.util.Log;
+import android.os.Environment;
 
 import androidx.annotation.RequiresApi;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Objects;
 
 public class DeviceVideosUtils {
 
@@ -51,7 +51,7 @@ public class DeviceVideosUtils {
     public ArrayList<HashMap<String, Object>> getVideos (Context context){
 
 
-        ArrayList<HashMap<String, Object>> videoList = new ArrayList<HashMap<String, Object>>();
+        ArrayList<HashMap<String, Object>> videoList = new ArrayList<>();
 
         if(doesAppHavePermission(context)){
             try{
@@ -65,10 +65,11 @@ public class DeviceVideosUtils {
                 String[] projection = new String[] {
                         MediaStore.Video.Media._ID,
                         MediaStore.Video.Media.DISPLAY_NAME,
-                        MediaStore.Video.Media.SIZE
+                        MediaStore.Video.Media.SIZE,
+                        MediaStore.Video.VideoColumns.DATA
                 };
 
-                String sortOrder = MediaStore.Video.Media.DATE_ADDED + " DSC";
+                String sortOrder = MediaStore.Video.Media.DATE_ADDED + " DESC";
 
                 try (Cursor cursor = context.getContentResolver().query(
                         collection,
@@ -83,25 +84,31 @@ public class DeviceVideosUtils {
                     int nameColumn =
                             cursor.getColumnIndexOrThrow(MediaStore.Video.Media.DISPLAY_NAME);
                     int sizeColumn = cursor.getColumnIndexOrThrow(MediaStore.Video.Media.SIZE);
+                    int pathColumn = cursor.getColumnIndexOrThrow(MediaStore.Video.VideoColumns.DATA);
 
                     while (cursor.moveToNext()) {
-                        HashMap<String, Object> videoData= new HashMap<>();
+                        HashMap<String, Object> videoData = new HashMap<>();
                         // Get values of columns for a given video.
                         long id = cursor.getLong(idColumn);
                         String name = cursor.getString(nameColumn);
                         int size = cursor.getInt(sizeColumn);
 
-                        Uri contentUri = ContentUris.withAppendedId(
-                                MediaStore.Video.Media.EXTERNAL_CONTENT_URI, id);
+                        String path  = cursor.getString(pathColumn);
 
                         // Stores column values and the contentUri in a local object
                         // that represents the media file.
-                        videoData.put("name",name);
-                        videoData.put("size",size);
-                        videoData.put("filePath",contentUri.getPath());
-                        videoData = updateMetaData(contentUri, videoData);
+                        videoData.put("name", name);
+                        videoData.put("size", size);
+                        videoData.put("filePath", path);
+                        ArrayList<String> metaData = getMetaData(path);
+                        if (metaData.size() == 2) {
+                            videoData.put("duration", metaData.get(0));
+                            videoData.put("dateCreated", metaData.get(1));
+                        }
                         videoList.add(videoData);
                     }
+
+
                 }
                 return videoList;
             }catch(Exception e){
@@ -113,24 +120,25 @@ public class DeviceVideosUtils {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
-    public HashMap<String, Object> updateMetaData(Uri uri, HashMap<String, Object> videoData) {
-        File  file = new File(Objects.requireNonNull(uri.getPath()));
-
+    public  ArrayList<String> getMetaData(String path) {
+        File  file = new File(path);
+        ArrayList<String> result = new ArrayList<>();
         if (file.exists()) {
 
             MediaMetadataRetriever retriever = new MediaMetadataRetriever();
             try {
                 retriever.setDataSource(file.getAbsolutePath());
-                videoData.put("duration", retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION));
-                videoData.put("dateCreated", retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DATE));
-                return videoData;
+                result.add(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION));
+                result.add( retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DATE));
+              
+                return result;
             } catch (Exception e) {
                 Log.e("DeviceMediaPlugin", "Exception : " + e.toString());
-                return videoData;
+                return result;
             }
         } else {
             Log.e("DeviceMediaPlugin", "File doesn´t exist.");
         }
-        return videoData;
+        return result;
     }
 }

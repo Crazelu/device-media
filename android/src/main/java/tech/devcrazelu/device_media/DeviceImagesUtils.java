@@ -20,7 +20,7 @@ public class DeviceImagesUtils {
 
     public ArrayList<HashMap<String, Object>> getFoldersImages(Context context){
         try{
-            ArrayList<HashMap<String, Object>> folderImages = new ArrayList<HashMap<String, Object>>();
+            ArrayList<HashMap<String, Object>> folderImages = new ArrayList<>();
 
             //checks if user has permission to read from external storage
             if(doesAppHavePermission(context)){
@@ -28,12 +28,14 @@ public class DeviceImagesUtils {
 
                 ArrayList<String> folderPathsList = getFolderPathsWithImages(rootDir);
 
-                for(String folderPath: folderPathsList){
-                    HashMap<String, Object> folder = new HashMap<>();
-                    folder.put("folderPath", folderPath);
-                    folder.put("folderName", folderPath.substring(folderPath.lastIndexOf('/')+1));
-                    folder.put("images", getImagesInPath(folderPath));
-                    folderImages.add(folder);
+                if (folderPathsList != null) {
+                    for(String folderPath: folderPathsList){
+                        HashMap<String, Object> folder = new HashMap<>();
+                        folder.put("folderPath", folderPath);
+                        folder.put("folderName", folderPath.substring(folderPath.lastIndexOf('/') + 1));
+                        folder.put("images", getImagesInPath(folderPath));
+                        folderImages.add(folder);
+                    }
                 }
             }else{
                 Log.d("DeviceMediaPlugin", "Permission not granted. Call requestPermission first");
@@ -90,7 +92,7 @@ public class DeviceImagesUtils {
      * about individual images in the given directory [path]
      */
     private ArrayList<HashMap<String, Object>> getImagesInPath(String path){
-        ArrayList<HashMap<String, Object>> result =  new ArrayList<HashMap<String, Object>>();
+        ArrayList<HashMap<String, Object>> result =  new ArrayList<>();
         try{
 
             String[] filenames = new String[0];
@@ -101,10 +103,9 @@ public class DeviceImagesUtils {
             assert filenames != null;
             for(String fileName: filenames){
                 if (isImage(fileName)){
-                    HashMap<String, Object> imageData = new HashMap<String, Object>();
+                    HashMap<String, Object> imageData = new HashMap<>();
                     Log.d("DeviceMediaPlugin", fileName);
                     String filePath = imagesFolder.getPath() + "/" + fileName;
-                    File image = new File(filePath);
                     imageData.put("imagePath", filePath);
                     imageData.put("fileName", fileName);
                     result.add(imageData);
@@ -130,19 +131,19 @@ public class DeviceImagesUtils {
      */
     private ArrayList<String> getFolderPathsWithImages(File rootDir){
         try{
-            ArrayList<String> fileList = new ArrayList<String>();
-            File listFile[] = rootDir.listFiles();
+            ArrayList<String> fileList = new ArrayList<>();
+            File[] listFile = rootDir.listFiles();
             if (listFile != null && listFile.length > 0) {
                 for (File file : listFile) {
                     if (file.isDirectory()) {
                         ArrayList<String> temp =  getFolderPathsWithImages(file);
-                        if(!temp.isEmpty()){
+                        if(temp != null && !temp.isEmpty()){
                             fileList.addAll(temp);
                         }
                     }
                     else {
                         String fileName = file.getName();
-                        if (isImage(fileName))
+                        if (isImage(fileName) && file.canRead())
                         {
                             String filePath = file.getPath();
                             String temp = filePath.substring(0, filePath.lastIndexOf('/'));
