@@ -108,7 +108,7 @@ public class DeviceVideosUtils {
                         videoData.put("thumbNail", bitmapToBase64(thumbNail));
                         ArrayList<String> metaData = getMetaData(path);
                         if (metaData.size() == 4) {
-                            videoData.put("duration", metaData.get(0));
+                            videoData.put("duration", Integer.parseInt(metaData.get(0)));
                             videoData.put("dateCreated", metaData.get(1));
                             videoData.put("videoWidth", Integer.parseInt(metaData.get(2)));
                             videoData.put("videoHeight", Integer.parseInt(metaData.get(3)));
