@@ -14,7 +14,7 @@ class ImageAlbumnsView extends StatelessWidget {
     return Center(
       child: imageFolders == null
           ? CircularProgressIndicator()
-          : GridView.count(childAspectRatio: .58, crossAxisCount: 3, children: [
+          : GridView.count(childAspectRatio: .68, crossAxisCount: 3, children: [
               for (var folder in imageFolders)
                 Wrap(
                   children: [
@@ -29,13 +29,13 @@ class ImageAlbumnsView extends StatelessWidget {
                       child: Container(
                           padding:
                               EdgeInsets.symmetric(vertical: 10, horizontal: 5),
-                          height: 230,
-                          width: 230,
+                          height: 200,
+                          width: 200,
                           child: Column(
                             children: [
                               Container(
-                                height: 150,
-                                width: 150,
+                                height: 120,
+                                width: 120,
                                 decoration: BoxDecoration(
                                   color: Colors.grey[200],
                                   borderRadius: BorderRadius.circular(20),
@@ -47,7 +47,7 @@ class ImageAlbumnsView extends StatelessWidget {
                               ),
                               SizedBox(height: 10),
                               Container(
-                                  width: 150,
+                                  width: 120,
                                   child: Text(folder.folderName,
                                       textAlign: TextAlign.center,
                                       overflow: TextOverflow.ellipsis,

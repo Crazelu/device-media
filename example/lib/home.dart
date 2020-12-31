@@ -1,11 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
-
 import 'package:flutter/services.dart';
 import 'package:device_media/device_media.dart';
-
-import 'views/images/image_albumns_view.dart';
+import 'views/images/image_albums_view.dart';
 import 'views/videos/video_list_view.dart';
 
 class Home extends StatefulWidget {
