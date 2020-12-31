@@ -1,13 +1,13 @@
 import 'dart:io';
-
+import 'package:device_media/device_media.dart';
 import 'package:device_media_example/views/videos/controls_overlay.dart';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 
 class VideoView extends StatefulWidget {
-  final String path;
+  final DeviceVideo video;
 
-  const VideoView({Key key, this.path}) : super(key: key);
+  const VideoView({Key key, this.video}) : super(key: key);
   @override
   _VideoViewState createState() => _VideoViewState();
 }
@@ -15,10 +15,12 @@ class VideoView extends StatefulWidget {
 class _VideoViewState extends State<VideoView> {
   VideoPlayerController _controller;
 
+  DeviceVideo get video => widget.video;
+
   @override
   void initState() {
     super.initState();
-    _controller = VideoPlayerController.file(File(widget.path));
+    _controller = VideoPlayerController.file(File(video.path));
     _controller.addListener(() {
       setState(() {});
     });
@@ -38,7 +40,8 @@ class _VideoViewState extends State<VideoView> {
     return Material(
       child: Container(
         child: AspectRatio(
-          aspectRatio: _controller.value.aspectRatio,
+          aspectRatio:
+              (video.width / video.height) ?? _controller.value.aspectRatio,
           child: Stack(
             alignment: Alignment.bottomCenter,
             children: <Widget>[

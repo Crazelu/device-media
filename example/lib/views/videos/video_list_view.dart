@@ -17,15 +17,33 @@ class VideoListView extends StatelessWidget {
             width: size.width,
             child: ListView(
               children: [
-                for (var video in videos)
-                  GestureDetector(
-                      onTap: () {
-                        Navigator.of(context).push(CupertinoPageRoute(
-                            builder: ((context) => VideoView(
-                                  path: video.path,
-                                ))));
-                      },
-                      child: Text(video.videoName))
+                Wrap(
+                  alignment: WrapAlignment.spaceAround,
+                  runSpacing: 10,
+                  children: [
+                    for (var video in videos)
+                      GestureDetector(
+                          onTap: () {
+                            Navigator.of(context).push(CupertinoPageRoute(
+                                builder: ((context) => VideoView(
+                                      video: video,
+                                    ))));
+                          },
+                          child: Container(
+                              height: 110,
+                              width: 110,
+                              alignment: Alignment.center,
+                              decoration: BoxDecoration(
+                                color: Colors.grey[200],
+                                borderRadius: BorderRadius.circular(10),
+                                image: DecorationImage(
+                                    image: MemoryImage(video.thumbnailBytes),
+                                    fit: BoxFit.cover),
+                              ),
+                              child: Icon(Icons.play_arrow_rounded,
+                                  size: 45, color: Colors.grey[300])))
+                  ],
+                ),
               ],
             ),
           );

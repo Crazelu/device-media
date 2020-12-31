@@ -64,7 +64,7 @@ class _HomeState extends State<Home> {
       });
 
       _pageController.animateToPage(index,
-          duration: Duration(milliseconds: 200), curve: Curves.easeInCubic);
+          duration: Duration(milliseconds: 100), curve: Curves.easeInCubic);
     }
   }
 
