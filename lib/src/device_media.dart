@@ -10,7 +10,7 @@ class DeviceMedia {
   ///[isImage]
   ///set to true if permission is for images
   ///set to false if permission is for device videos
-  ///defaults to true
+  ///defaults to [true]
   static Future<bool> requestPermission({isImage: true}) async {
     final bool status =
         await _channel.invokeMethod('requestPermission', <String, bool>{
