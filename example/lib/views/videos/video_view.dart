@@ -37,7 +37,6 @@ class _VideoViewState extends State<VideoView> {
   Widget build(BuildContext context) {
     return Material(
       child: Container(
-        padding: const EdgeInsets.all(20),
         child: AspectRatio(
           aspectRatio: _controller.value.aspectRatio,
           child: Stack(

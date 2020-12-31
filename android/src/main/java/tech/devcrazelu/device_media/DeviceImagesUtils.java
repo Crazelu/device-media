@@ -10,6 +10,34 @@ import java.util.HashMap;
 
 public class DeviceImagesUtils {
 
+    private ArrayList<String> imageExtensions;
+
+    private static String TAG = "DeviceMediaPlugin";
+
+    DeviceImagesUtils(){
+        this.imageExtensions = new ArrayList<String>();
+        this.imageExtensions.add(".png");
+        this.imageExtensions.add(".jpg");
+        this.imageExtensions.add(".jpeg");
+        this.imageExtensions.add(".gif");
+    }
+
+    //Constructor for adding more image extensions from user input to run checks against
+    DeviceImagesUtils(String[] extensions){
+        this.imageExtensions = new ArrayList<String>();
+        this.imageExtensions.add(".png");
+        this.imageExtensions.add(".jpg");
+        this.imageExtensions.add(".jpeg");
+        this.imageExtensions.add(".gif");
+
+      for(int i=0; i< extensions.length; i++){
+          if(!this.imageExtensions.contains(extensions[i])){
+              this.imageExtensions.add(extensions[i]);
+          }
+
+      }
+    }
+
     /**
      *
      * @param context
@@ -38,12 +66,12 @@ public class DeviceImagesUtils {
                     }
                 }
             }else{
-                Log.d("DeviceMediaPlugin", "Permission not granted. Call requestPermission first");
+                Log.d(TAG, "Permission not granted. Call requestPermission first");
             }
 
             return folderImages;
         }catch(Exception e){
-            Log.d("DeviceMediaPlugin", e.toString());
+            Log.d(TAG, e.toString());
             return null;
         }
 
@@ -61,7 +89,7 @@ public class DeviceImagesUtils {
         int status = context.checkCallingOrSelfPermission(requiredPermission);
         return status == PackageManager.PERMISSION_GRANTED;
     }catch(Exception e){
-        Log.d("DeviceMediaPlugin", e.toString());
+        Log.d(TAG, e.toString());
         return false;
     }
     }
@@ -73,15 +101,17 @@ public class DeviceImagesUtils {
      * included for our use case else, false
      */
     private boolean isImage(String imagePath){
+
         try{
-            return (imagePath.endsWith(".png")
-                    || imagePath.endsWith(".jpg")
-                    || imagePath.endsWith(".jpeg")
-                    || imagePath.endsWith(".gif"));
+            String imageExtension = imagePath.substring(imagePath.lastIndexOf("."));
+
+            return imageExtensions.contains(imageExtension);
         }catch(Exception e){
-            Log.d("DeviceMediaPlugin", e.toString());
+            Log.d(TAG, e.toString());
             return false;
         }
+
+
     }
 
     /**
@@ -95,27 +125,28 @@ public class DeviceImagesUtils {
         ArrayList<HashMap<String, Object>> result =  new ArrayList<>();
         try{
 
-            String[] filenames = new String[0];
+            String[] filenames;
             File imagesFolder = new File(path);
+
             if (imagesFolder.exists()) {
                 filenames = imagesFolder.list();
-            }
-            assert filenames != null;
-            for(String fileName: filenames){
-                if (isImage(fileName)){
-                    HashMap<String, Object> imageData = new HashMap<>();
-                    Log.d("DeviceMediaPlugin", fileName);
-                    String filePath = imagesFolder.getPath() + "/" + fileName;
-                    imageData.put("imagePath", filePath);
-                    imageData.put("fileName", fileName);
-                    result.add(imageData);
+
+                assert filenames != null;
+                for(String fileName: filenames){
+                    if (isImage(fileName)){
+                        HashMap<String, Object> imageData = new HashMap<>();
+                        Log.d(TAG, fileName);
+                        String filePath = imagesFolder.getPath() + "/" + fileName;
+                        imageData.put("imagePath", filePath);
+                        imageData.put("fileName", fileName);
+                        result.add(imageData);
+                    }
                 }
             }
 
-
             return result;
         }catch(Exception e){
-            Log.d("DeviceMediaPlugin", e.toString());
+            Log.d(TAG, e.toString());
             return result;
         }
     }
@@ -124,7 +155,7 @@ public class DeviceImagesUtils {
      *
      * @param rootDir
      * Scans all the files in given directory and returns list
-     * of formatted file paths where image media with extensions [png, jpg, jpeg, gif]
+     * of formatted file paths where image media with extensions [imageExtensions]
      * were found.
      * Image extensions list can be extended for a larger use case
      * @return array list of directories's paths with image media
@@ -143,7 +174,7 @@ public class DeviceImagesUtils {
                     }
                     else {
                         String fileName = file.getName();
-                        if (isImage(fileName) && file.canRead())
+                        if (isImage(fileName) && file.length() > 0)
                         {
                             String filePath = file.getPath();
                             String temp = filePath.substring(0, filePath.lastIndexOf('/'));
@@ -157,10 +188,10 @@ public class DeviceImagesUtils {
                     }
                 }
             }
-            Log.d("DeviceMediaPlugin", fileList.toString());
+            Log.d(TAG, fileList.toString());
             return fileList;
         }catch(Exception e){
-            Log.d("DeviceMediaPlugin", e.toString());
+            Log.d(TAG, e.toString());
             return null;
         }
     }

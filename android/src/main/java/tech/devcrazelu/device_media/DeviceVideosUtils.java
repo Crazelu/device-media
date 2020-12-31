@@ -1,24 +1,27 @@
 package tech.devcrazelu.device_media;
 
 import android.Manifest;
-import android.content.ContentUris;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.media.MediaMetadataRetriever;
+import android.media.ThumbnailUtils;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.MediaStore;
 import android.util.Log;
-import android.os.Environment;
 
 import androidx.annotation.RequiresApi;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 public class DeviceVideosUtils {
+
+    private static String TAG = "DeviceMediaPlugin";
 
     /**
      *
@@ -42,7 +45,7 @@ public class DeviceVideosUtils {
             }
             return storagePermissionStatus == PackageManager.PERMISSION_GRANTED;
         }catch(Exception e){
-            Log.d("DeviceMediaPlugin", e.toString());
+            Log.d(TAG, e.toString());
             return false;
         }
     }
@@ -95,15 +98,20 @@ public class DeviceVideosUtils {
 
                         String path  = cursor.getString(pathColumn);
 
-                        // Stores column values and the contentUri in a local object
-                        // that represents the media file.
+                        // Stores column values and the thumb nail (in base 64) in a local object
+                        // that represents the video file.
+
+                        Bitmap thumbNail = ThumbnailUtils.createVideoThumbnail(path, MediaStore.Video.Thumbnails.MINI_KIND);
                         videoData.put("name", name);
                         videoData.put("size", size);
                         videoData.put("filePath", path);
+                        videoData.put("thumbNail", bitmapToBase64(thumbNail));
                         ArrayList<String> metaData = getMetaData(path);
-                        if (metaData.size() == 2) {
+                        if (metaData.size() == 4) {
                             videoData.put("duration", metaData.get(0));
                             videoData.put("dateCreated", metaData.get(1));
+                            videoData.put("videoWidth", Integer.parseInt(metaData.get(2)));
+                            videoData.put("videoHeight", Integer.parseInt(metaData.get(3)));
                         }
                         videoList.add(videoData);
                     }
@@ -112,7 +120,7 @@ public class DeviceVideosUtils {
                 }
                 return videoList;
             }catch(Exception e){
-                Log.d("DeviceMediaPlugin", e.toString());
+                Log.d(TAG, e.toString());
                 return videoList;
             }
         }
@@ -130,15 +138,30 @@ public class DeviceVideosUtils {
                 retriever.setDataSource(file.getAbsolutePath());
                 result.add(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION));
                 result.add( retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DATE));
-              
+                result.add(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH));
+                result.add(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT));
+                retriever.release();
+
                 return result;
             } catch (Exception e) {
-                Log.e("DeviceMediaPlugin", "Exception : " + e.toString());
+                Log.e(TAG, "Exception : " + e.toString());
                 return result;
             }
         } else {
-            Log.e("DeviceMediaPlugin", "File doesn´t exist.");
+            Log.e(TAG, "File doesn´t exist");
         }
         return result;
+    }
+
+    private byte[] bitmapToBase64(Bitmap bitmap){
+        try {
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
+            return byteArrayOutputStream.toByteArray();
+
+        } catch (Exception e) {
+            Log.e(TAG, e.toString());
+            return null;
+        }
     }
 }
